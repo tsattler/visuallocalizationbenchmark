@@ -18,6 +18,8 @@ We provide a mutual nearest neighbors matcher implemented in PyTorch as an examp
 ### Prerequisites 
 The provided code requires that [COLMAP](https://colmap.github.io/), a state-of-the-art Structure-from-Motion pipeline, is available on the system. 
 
+For feature matching, Torch is used.
+
 ### Dataset Preparation
 This code currently supports **only the Aachen Day-Night** dataset. Further datasets might be supported in the future. 
 For the dataset, we provide two files ``database.db`` and ``image_pairs_to_match.txt``, which are in the ``data/aachen-day-night/`` sub-directory of this repository. You will need to move them to directory where you are storing the Aachen Day-Night dataset. In order for the script to function properly, the directory should have the following structure:
