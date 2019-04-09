@@ -63,6 +63,8 @@ The local features should be stored in the [`npz`](https://docs.scipy.org/doc/nu
 
 Moreover, they are supposed to be saved alongside their corresponding images with an extension corresponding to the `method_name` (e.g. if `method_name = d2-net` the features for the image `/local/aachen/images/images_upright/db/1000.jpg` should be in the file `/local/aachen/images/images_upright/db/1000.jpg.d2-net`).
 
+**Important information**: In order to work, our script requires that the local features are extracted at the **original image resolutions**. If you downscale the images before feature extraction, you will need to scale the keypoint positions to the original resolutions. **Otherwise, the camera pose estimation stage will fail**.
+
 ### Citing
 
 If you use this code in your project, please cite the following paper:
