@@ -41,7 +41,7 @@ Here,
 
 - `3D-models` contains the reference database model in `nvm` format and a list of database images with their COLMAP intrinsics. This data is provided by the dataset.
 
-- `night_time_queries_with_intrinsics.txt` contains the list of query images with their COLMAP intrinsics (the intrinsics are not used since they are supposed to be part of the database already - a list of query images should suffice). This data is provided by the dataset.
+- `night_time_queries_with_intrinsics.txt` contains the list of query images with their COLMAP intrinsics (the intrinsics are not used since they are supposed to be part of the database already - a list of query images should suffice). **Only the night-time images are currently used**. This data is provided by the dataset.
 
 In order to run the script, you will first need to extract your local features (see below). Then call the script, e.g., via 
 ```
