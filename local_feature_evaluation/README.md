@@ -26,8 +26,8 @@ For the dataset, we provide two files ``database.db`` and ``image_pairs_to_match
 .
 ├── database.db
 ├── image_pairs_to_match.txt
-├── images
-├── model
+├── images/images_upright
+├── 3D-models
 │  ├── database_intrinsics.txt
 │  └── aachen_cvpr2018_db.nvm
 └── queries/night_time_queries_with_intrinsics.txt
@@ -51,7 +51,7 @@ python reconstruction_pipeline.py
 	--method_name d2-net
 ```
 
-## Local Features Format
+### Local Features Format
 
 Our script tries to load local features per image from files. It is your responsibility to create these files. 
 
@@ -63,7 +63,7 @@ The local features should be stored in the [`npz`](https://docs.scipy.org/doc/nu
 
 Moreover, they are supposed to be saved alongside their corresponding images with an extension corresponding to the `method_name` (e.g. if `method_name = d2-net` the features for the image `/local/aachen/images/images_upright/db/1000.jpg` should be in the file `/local/aachen/images/images_upright/db/1000.jpg.d2-net`).
 
-## BibTeX
+### Citing
 
 If you use this code in your project, please cite the following paper:
 
