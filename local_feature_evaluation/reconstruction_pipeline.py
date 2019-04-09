@@ -65,7 +65,7 @@ def preprocess_reference_model(paths, args):
         camera_parameters[image_name] = camera
     
     # Recover poses.
-    with open(os.path.join(paths.reference_model_path, 'database_model.nvm')) as f:
+    with open(os.path.join(paths.reference_model_path, 'aachen_cvpr2018_db.nvm')) as f:
         raw_extrinsics = f.readlines()
 
     # Skip the header.
@@ -138,7 +138,7 @@ def import_features(images, paths, args):
     print('Importing features...')
     
     for image_name, image_id in tqdm(images.items(), total=len(images.items())):
-        features_path = os.path.join(args.dataset_path, 'images', '%s.%s' % (image_name, args.method_name))
+        features_path = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name, args.method_name))
         
         keypoints = np.load(features_path)['keypoints']
         n_keypoints = keypoints.shape[0]
@@ -180,8 +180,8 @@ def match_features(images, paths, args):
     for raw_pair in tqdm(raw_pairs, total=len(raw_pairs)):
         image_name1, image_name2 = raw_pair.strip('\n').split(' ')
         
-        features_path1 = os.path.join(args.dataset_path, 'images', '%s.%s' % (image_name1, args.method_name))
-        features_path2 = os.path.join(args.dataset_path, 'images', '%s.%s' % (image_name2, args.method_name))
+        features_path1 = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name1, args.method_name))
+        features_path2 = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name2, args.method_name))
 
         descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
         descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
@@ -253,7 +253,7 @@ def recover_query_poses(paths, args):
                      '--output_type', 'TXT'])
     
     # Recover query names.
-    query_image_list_path = os.path.join(args.dataset_path, 'queries_with_intrinsics.txt')
+    query_image_list_path = os.path.join(args.dataset_path, 'queries/night_time_queries_with_intrinsics.txt')
     
     with open(query_image_list_path) as f:
         raw_queries = f.readlines()
@@ -296,9 +296,9 @@ if __name__ == "__main__":
     paths = types.SimpleNamespace()
     paths.dummy_database_path = os.path.join(args.dataset_path, 'database.db')
     paths.database_path = os.path.join(args.dataset_path, args.method_name + '.db')
-    paths.image_path = os.path.join(args.dataset_path, 'images')
+    paths.image_path = os.path.join(args.dataset_path, 'images/images_upright')
     paths.features_path = os.path.join(args.dataset_path, args.method_name)
-    paths.reference_model_path = os.path.join(args.dataset_path, 'model')
+    paths.reference_model_path = os.path.join(args.dataset_path, '3D-models')
     paths.match_list_path = os.path.join(args.dataset_path, 'image_pairs_to_match.txt')
     paths.empty_model_path = os.path.join(args.dataset_path, 'sparse-%s-empty' % args.method_name)
     paths.database_model_path = os.path.join(args.dataset_path, 'sparse-%s-database' % args.method_name)
