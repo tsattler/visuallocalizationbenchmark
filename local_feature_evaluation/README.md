@@ -18,7 +18,12 @@ We provide a mutual nearest neighbors matcher implemented in PyTorch as an examp
 ### Prerequisites 
 The provided code requires that [COLMAP](https://colmap.github.io/), a state-of-the-art Structure-from-Motion pipeline, is available on the system. 
 
-For feature matching, Torch is used.
+The code was tested on Python 3.7; it should work without issues on Python 3+. [Conda](https://docs.conda.io/en/latest/) can be used to install the missing packages:
+
+```bash
+conda install numpy tqdm
+conda install pytorch cudatoolkit=9.0 -c pytorch # required for the provided mutual NN matcher
+```
 
 ### Dataset Preparation
 This code currently supports **only the Aachen Day-Night** dataset. Further datasets might be supported in the future. 
@@ -28,7 +33,8 @@ For the dataset, we provide two files ``database.db`` and ``image_pairs_to_match
 .
 ├── database.db
 ├── image_pairs_to_match.txt
-├── images/images_upright
+├── images
+│  └── images_upright
 ├── 3D-models
 │  ├── database_intrinsics.txt
 │  └── aachen_cvpr2018_db.nvm
