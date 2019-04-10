@@ -1,5 +1,6 @@
 import torch
 
+
 # Mutual nearest neighbors matcher for L2 normalized descriptors.
 def mutual_nn_matcher(descriptors1, descriptors2):
     device = descriptors1.device

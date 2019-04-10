@@ -22,6 +22,7 @@ from camera import Camera
 
 from utils import quaternion_to_rotation_matrix, camera_center_to_translation
 
+
 def recover_database_images_and_ids(paths, args):
     # Connect to the database.
     connection = sqlite3.connect(paths.database_path)
@@ -40,6 +41,7 @@ def recover_database_images_and_ids(paths, args):
     connection.close()
 
     return images, cameras
+
 
 def preprocess_reference_model(paths, args):
     print('Preprocessing the reference model...')
@@ -90,6 +92,7 @@ def preprocess_reference_model(paths, args):
     
     return camera_parameters
 
+
 def generate_empty_reconstruction(images, cameras, camera_parameters, paths, args):
     print('Generating the empty reconstruction...')
 
@@ -129,6 +132,7 @@ def generate_empty_reconstruction(images, cameras, camera_parameters, paths, arg
     with open(os.path.join(paths.empty_model_path, 'points3D.txt'), 'w') as f:
         pass
 
+
 def import_features(images, paths, args):
     # Connect to the database.
     connection = sqlite3.connect(paths.database_path)
@@ -138,7 +142,7 @@ def import_features(images, paths, args):
     print('Importing features...')
     
     for image_name, image_id in tqdm(images.items(), total=len(images.items())):
-        features_path = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name, args.method_name))
+        features_path = os.path.join(paths.image_path, '%s.%s' % (image_name, args.method_name))
         
         keypoints = np.load(features_path)['keypoints']
         n_keypoints = keypoints.shape[0]
@@ -157,11 +161,13 @@ def import_features(images, paths, args):
     cursor.close()
     connection.close()
 
+
 def image_ids_to_pair_id(image_id1, image_id2):
     if image_id1 > image_id2:
         return 2147483647 * image_id2 + image_id1
     else:
         return 2147483647 * image_id1 + image_id2
+
 
 def match_features(images, paths, args):
     # Connect to the database.
@@ -172,16 +178,14 @@ def match_features(images, paths, args):
     print('Matching...')
 
     with open(paths.match_list_path, 'r') as f:
-	    raw_pairs = f.readlines()
-
-    matches_file = open(os.path.join(args.dataset_path, 'matches_%s.txt' % args.method_name), 'w')
+        raw_pairs = f.readlines()
     
     image_pair_ids = set()
     for raw_pair in tqdm(raw_pairs, total=len(raw_pairs)):
         image_name1, image_name2 = raw_pair.strip('\n').split(' ')
         
-        features_path1 = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name1, args.method_name))
-        features_path2 = os.path.join(args.dataset_path, 'images/images_upright', '%s.%s' % (image_name2, args.method_name))
+        features_path1 = os.path.join(paths.image_path, '%s.%s' % (image_name1, args.method_name))
+        features_path2 = os.path.join(paths.image_path, '%s.%s' % (image_name2, args.method_name))
 
         descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
         descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
@@ -205,6 +209,7 @@ def match_features(images, paths, args):
     cursor.close()
     connection.close()
 
+
 def geometric_verification(paths, args):
     print('Running geometric verification...')
 
@@ -212,6 +217,7 @@ def geometric_verification(paths, args):
                      '--database_path', paths.database_path,
                      '--match_list_path', paths.match_list_path,
                      '--match_type', 'pairs'])
+
 
 def reconstruct(paths, args):
     if not os.path.isdir(paths.database_model_path):
@@ -227,6 +233,7 @@ def reconstruct(paths, args):
                      '--Mapper.ba_refine_principal_point', '0',
                      '--Mapper.ba_refine_extra_params', '0'])
 
+
 def register_queries(paths, args):
     if not os.path.isdir(paths.final_model_path):
         os.mkdir(paths.final_model_path)
@@ -239,7 +246,8 @@ def register_queries(paths, args):
                      '--Mapper.ba_refine_focal_length', '0',
                      '--Mapper.ba_refine_principal_point', '0',
                      '--Mapper.ba_refine_extra_params', '0'])
-    
+
+
 def recover_query_poses(paths, args):
     print('Recovering query poses...')
 
@@ -281,6 +289,7 @@ def recover_query_poses(paths, args):
 
     f.close()
 
+
 if __name__ == "__main__":    
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', required=True, help='Path to the dataset')
@@ -296,7 +305,7 @@ if __name__ == "__main__":
     paths = types.SimpleNamespace()
     paths.dummy_database_path = os.path.join(args.dataset_path, 'database.db')
     paths.database_path = os.path.join(args.dataset_path, args.method_name + '.db')
-    paths.image_path = os.path.join(args.dataset_path, 'images/images_upright')
+    paths.image_path = os.path.join(args.dataset_path, 'images', 'images_upright')
     paths.features_path = os.path.join(args.dataset_path, args.method_name)
     paths.reference_model_path = os.path.join(args.dataset_path, '3D-models')
     paths.match_list_path = os.path.join(args.dataset_path, 'image_pairs_to_match.txt')
