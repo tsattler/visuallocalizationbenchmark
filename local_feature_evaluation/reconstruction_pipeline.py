@@ -227,8 +227,8 @@ def reconstruct(paths, args):
     subprocess.call([os.path.join(args.colmap_path, 'colmap'), 'point_triangulator',
                      '--database_path', paths.database_path,
                      '--image_path', paths.image_path,
-                     '--import_path', paths.empty_model_path,
-                     '--export_path', paths.database_model_path,
+                     '--input_path', paths.empty_model_path,
+                     '--output_path', paths.database_model_path,
                      '--Mapper.ba_refine_focal_length', '0',
                      '--Mapper.ba_refine_principal_point', '0',
                      '--Mapper.ba_refine_extra_params', '0'])
@@ -241,8 +241,8 @@ def register_queries(paths, args):
     # Register the query images.
     subprocess.call([os.path.join(args.colmap_path, 'colmap'), 'image_registrator',
                      '--database_path', paths.database_path,
-                     '--import_path', paths.database_model_path,
-                     '--export_path', paths.final_model_path,
+                     '--input_path', paths.database_model_path,
+                     '--output_path', paths.final_model_path,
                      '--Mapper.ba_refine_focal_length', '0',
                      '--Mapper.ba_refine_principal_point', '0',
                      '--Mapper.ba_refine_extra_params', '0'])
