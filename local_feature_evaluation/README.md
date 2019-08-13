@@ -85,3 +85,27 @@ If you use this code in your project, please cite the following paper:
     year = {2019},
 }
 ```
+
+## Using COLMAP with Custom Features
+For convenience, and separate from the functionality of the local features benchmark, we also provide functionality to simply import custom local features and matches into any COLMAP database. This allows to use custom features inside COLMAP for arbitrary datasets.
+
+The provided approach assumes that there is a directory ```data_directory/``` that contains the images, an existing COLMAP database (for example ```db.db```), and text file containing pairs of image names to be matched (for example ```match_list.txt```). The database can be created by running COLMAP's feature detection on the images in the database (it cannot be empty). In order to use custom local features, ```.npz``` files containing these features (in the format from above) need to be saved alongside their corresponding images with an extension corresponding to the ```method_name```.
+
+Given these pre-requisites, ```modify_database_with_custom_features_and_matches.py``` can be used to import the features into the database, match images, and run geometric verification. The resulting database can then be used with COLMAP to reconstruct the scene.
+
+An example call to ```modify_database_with_custom_features_and_matches.py```, using D2-Net features, is
+```
+python modify_database_with_custom_features_and_matches.py
+	--dataset_path data_directory/
+	--colmap_path /local/colmap/build/src/exe
+	--method_name d2-net
+	--database_name db.db
+	--image_path images/
+	--match_list match_list.txt
+```
+The call assumes that there is a directory ```data_directory/``` that contains an existing COLMAP database ```db.db```, an folder ```images/``` that contains all images (for each image with name ```XX.jpg```, there is assume to be a file ```XX.jpg.d2-net``` containing the D2-Net features for that image), and a text file ```match_list.txt``` that contains the image pairs to be matched. The call will create a new database file ```d2-net.db``` in the ```data_directory/``` directory.
+
+**Important information:**
+* The provided approach can currently not be used to extend an existing database where new images were added as it deletes all features and matches in the database. A way around this would be to first export and then re-import the existing matches in the database.
+* The call will abort with an error if there is already a database with the name ```d2-net.db``` (or in general ```your_method_name.db```).
+* We are currently not providing support for this functionality. It is provided simply for convenience for experienced COLMAP users.
