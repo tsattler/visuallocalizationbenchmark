@@ -164,13 +164,6 @@ def import_features(images, paths, args):
         cursor.execute("INSERT INTO keypoints(image_id, rows, cols, data) VALUES(?, ?, ?, ?);",
                        (image_id, keypoints.shape[0], keypoints.shape[1], keypoints_str))
         connection.commit()
-
-        # Import the descriptors
-        descriptors = np.ascontiguousarray(np.load(features_path)['descriptors'], np.uint8)
-        cursor.execute("INSERT INTO descriptors VALUES (?, ?, ?, ?)",
-                       (image_id,) + descriptors.shape + (array_to_blob(descriptors),))
-        connection.commit()
-
     
     # Close the connection to the database.
     cursor.close()
@@ -184,45 +177,45 @@ def image_ids_to_pair_id(image_id1, image_id2):
         return 2147483647 * image_id1 + image_id2
 
 
-#def match_features(images, paths, args):
-    ## Connect to the database.
-    #connection = sqlite3.connect(paths.database_path)
-    #cursor = connection.cursor()
+def match_features(images, paths, args):
+    # Connect to the database.
+    connection = sqlite3.connect(paths.database_path)
+    cursor = connection.cursor()
 
-    ## Match the features and insert the matches in the database.
-    #print('Matching...')
+    # Match the features and insert the matches in the database.
+    print('Matching...')
 
-    #with open(paths.match_list_path, 'r') as f:
-        #raw_pairs = f.readlines()
+    with open(paths.match_list_path, 'r') as f:
+        raw_pairs = f.readlines()
     
-    #image_pair_ids = set()
-    #for raw_pair in tqdm(raw_pairs, total=len(raw_pairs)):
-        #image_name1, image_name2 = raw_pair.strip('\n').split(' ')
+    image_pair_ids = set()
+    for raw_pair in tqdm(raw_pairs, total=len(raw_pairs)):
+        image_name1, image_name2 = raw_pair.strip('\n').split(' ')
         
-        #features_path1 = os.path.join(paths.image_path, '%s.%s' % (image_name1, args.method_name))
-        #features_path2 = os.path.join(paths.image_path, '%s.%s' % (image_name2, args.method_name))
+        features_path1 = os.path.join(paths.image_path, '%s.%s' % (image_name1, args.method_name))
+        features_path2 = os.path.join(paths.image_path, '%s.%s' % (image_name2, args.method_name))
 
-        #descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
-        #descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
-        #matches = mutual_nn_matcher(descriptors1, descriptors2).astype(np.uint32)
+        descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
+        descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
+        matches = mutual_nn_matcher(descriptors1, descriptors2).astype(np.uint32)
 
-        #image_id1, image_id2 = images[image_name1], images[image_name2]
-        #image_pair_id = image_ids_to_pair_id(image_id1, image_id2)
-        #if image_pair_id in image_pair_ids:
-            #continue
-        #image_pair_ids.add(image_pair_id)
+        image_id1, image_id2 = images[image_name1], images[image_name2]
+        image_pair_id = image_ids_to_pair_id(image_id1, image_id2)
+        if image_pair_id in image_pair_ids:
+            continue
+        image_pair_ids.add(image_pair_id)
 
-        #if image_id1 > image_id2:
-            #matches = matches[:, [1, 0]]
+        if image_id1 > image_id2:
+            matches = matches[:, [1, 0]]
         
-        #matches_str = matches.tostring()
-        #cursor.execute("INSERT INTO matches(pair_id, rows, cols, data) VALUES(?, ?, ?, ?);",
-                       #(image_pair_id, matches.shape[0], matches.shape[1], matches_str))
-        #connection.commit()
+        matches_str = matches.tostring()
+        cursor.execute("INSERT INTO matches(pair_id, rows, cols, data) VALUES(?, ?, ?, ?);",
+                       (image_pair_id, matches.shape[0], matches.shape[1], matches_str))
+        connection.commit()
     
-    ## Close the connection to the database.
-    #cursor.close()
-    #connection.close()
+    # Close the connection to the database.
+    cursor.close()
+    connection.close()
 
 
 def geometric_verification(paths, args):
@@ -312,9 +305,9 @@ if __name__ == "__main__":
     parser.add_argument('--method_name', required=True, help='Name of the method')
     args = parser.parse_args()
 
-    ## Torch settings for the matcher.
-    #use_cuda = torch.cuda.is_available()
-    #device = torch.device("cuda:0" if use_cuda else "cpu")
+    # Torch settings for the matcher.
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if use_cuda else "cpu")
 
     # Create the extra paths.
     paths = types.SimpleNamespace()
@@ -340,7 +333,7 @@ if __name__ == "__main__":
     images, cameras = recover_database_images_and_ids(paths, args)
     generate_empty_reconstruction(images, cameras, camera_parameters, paths, args)
     import_features(images, paths, args)
-    #match_features(images, paths, args)
+    match_features(images, paths, args)
     geometric_verification(paths, args)
     reconstruct(paths, args)
     register_queries(paths, args)
