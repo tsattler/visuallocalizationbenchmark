@@ -151,6 +151,7 @@ if __name__ == "__main__":
     parser.add_argument('--database_name', required=True, help='Name of the COLMAP database relative to dataset_path')
     parser.add_argument('--image_path', required=True, help='Name of the image directory relative to dataset_path')
     parser.add_argument('--match_list', required=True, help='Name of the text file containing image pairs to be matched, relative to dataset_path')
+    parser.add_argument('--matching_only', type=bool, default=False, help='Only performs feature matching without creating a new database or importing features')
     args = parser.parse_args()
 
     ## Torch settings for the matcher.
@@ -165,13 +166,16 @@ if __name__ == "__main__":
     paths.features_path = os.path.join(args.dataset_path, args.method_name)
     paths.match_list_path = os.path.join(args.dataset_path, args.match_list)
     
-    # Create a copy of the dummy database.
-    if os.path.exists(paths.database_path):
+    if args.matching_only == False:
+      # Create a copy of the dummy database.
+      if os.path.exists(paths.database_path):
         raise FileExistsError('The database file already exists for method %s.' % args.method_name)
-    shutil.copyfile(paths.dummy_database_path, paths.database_path)
+      shutil.copyfile(paths.dummy_database_path, paths.database_path)
     
     # Reconstruction pipeline.
     images, cameras = recover_database_images_and_ids(paths, args)
-    import_features(images, paths, args)
+    if args.matching_only == False:
+      import_features(images, paths, args)
+      
     match_features(images, paths, args)
     geometric_verification(paths, args)
