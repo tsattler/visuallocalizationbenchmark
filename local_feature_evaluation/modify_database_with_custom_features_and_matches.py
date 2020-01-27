@@ -78,8 +78,8 @@ def import_features(images, paths, args):
         keypoints_str = keypoints.tostring()
         cursor.execute("INSERT INTO keypoints(image_id, rows, cols, data) VALUES(?, ?, ?, ?);",
                        (image_id, keypoints.shape[0], keypoints.shape[1], keypoints_str))
-        connection.commit()
     
+    connection.commit()
     # Close the connection to the database.
     cursor.close()
     connection.close()
@@ -109,9 +109,18 @@ def match_features(images, paths, args):
         
         features_path1 = os.path.join(paths.image_path, '%s.%s' % (image_name1, args.method_name))
         features_path2 = os.path.join(paths.image_path, '%s.%s' % (image_name2, args.method_name))
+        
+        #print(features_path1, features_path2)
+        D1 = np.load(features_path1)['descriptors'];
+        D2 = np.load(features_path2)['descriptors'];
+        D1 = D1[:min(D1.shape[0],25000),:];
+        D2 = D2[:min(D2.shape[0],25000),:];
+        #print(D1.shape, D2.shape)
 
-        descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
-        descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
+        #descriptors1 = torch.from_numpy(np.load(features_path1)['descriptors']).to(device)
+        #descriptors2 = torch.from_numpy(np.load(features_path2)['descriptors']).to(device)
+        descriptors1 = torch.from_numpy(D1).to(device)
+        descriptors2 = torch.from_numpy(D2).to(device)
         matches = mutual_nn_matcher(descriptors1, descriptors2).astype(np.uint32)
 
         image_id1, image_id2 = images[image_name1], images[image_name2]
@@ -126,9 +135,9 @@ def match_features(images, paths, args):
         matches_str = matches.tostring()
         cursor.execute("INSERT INTO matches(pair_id, rows, cols, data) VALUES(?, ?, ?, ?);",
                        (image_pair_id, matches.shape[0], matches.shape[1], matches_str))
-        connection.commit()
     
     # Close the connection to the database.
+    connection.commit()
     cursor.close()
     connection.close()
 
