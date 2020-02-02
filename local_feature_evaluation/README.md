@@ -86,7 +86,7 @@ If you use this code in your project, please cite the following paper:
 }
 ```
 
-## Using COLMAP with Custom Features
+# Using COLMAP with Custom Features
 For convenience, and separate from the functionality of the local features benchmark, we also provide functionality to simply import custom local features and matches into any COLMAP database. This allows to use custom features inside COLMAP for arbitrary datasets.
 
 The provided approach assumes that there is a directory ```data_directory/``` that contains the images, an existing COLMAP database (for example ```db.db```), and text file containing pairs of image names to be matched (for example ```match_list.txt```). The database can be created by running COLMAP's feature detection on the images in the database (it cannot be empty). In order to use custom local features, ```.npz``` files containing these features (in the format from above) need to be saved alongside their corresponding images with an extension corresponding to the ```method_name```.
@@ -111,7 +111,7 @@ The call assumes that there is a directory ```data_directory/``` that contains a
 * We are currently not providing support for this functionality. It is provided simply for convenience for experienced COLMAP users.
 * If the existing database contains feature matches, especially verified matches, then this will cause problems. Make sure that the database does not contain such matches, e.g., by clearing them inside COLMAP's gui.
 
-## Using COLMAP for Visual Localization with Custom Features
+# Using COLMAP for Visual Localization with Custom Features
 The above pipeline can be used to implement the following visual localization pipeline in COLMAP using custom features:
 1. For each query image, find the top-k most similar database images.
 2. Match custom features between each query and its top-k retrieved images.
