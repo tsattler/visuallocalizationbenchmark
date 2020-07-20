@@ -73,6 +73,31 @@ Moreover, they are supposed to be saved alongside their corresponding images wit
 
 **Important information**: In order to work, our script requires that the local features are extracted at the **original image resolutions**. If you downscale the images before feature extraction, you will need to scale the keypoint positions to the original resolutions. **Otherwise, the camera pose estimation stage will fail**.
 
+### Local Feature Evaluation on Aachen Day-Night v1.1
+Make sure that you downloaded both the original Aachen Day-Night dataset and the Aachen Day-Night v1.1 dataset (both are available at [visuallocalization.net](https://www.visuallocalization.net/datasets/)). Follow the instructions in the README file of the Aachen Day-Night v1.1 dataset when extracting the data from the .zip file. For the v1.1 version of the dataset, we provide two files ``database_v1_1.db`` and ``image_pairs_to_match_v1_1.txt``, which are in the ``data/aachen-day-night/`` sub-directory of this repository. You will need to move them to directory where you are storing the Aachen Day-Night dataset. In order for the script to function properly, the directory should have the following structure:
+
+```
+.
+├── database_v1_1.db
+├── image_pairs_to_match_v1_1.txt
+├── images
+│  └── images_upright
+├── 3D-models
+│  ├── aachen_v_1_1/
+│     ├── aachen_v_1_1.nvm
+│     └── database_intrinsics_v1_1.txt
+└── queries/night_time_queries_with_intrinsics.txt
+```
+
+As for the original Aachen Day-Night dataset, you can run pose estimation for your local features through the script
+```
+python reconstruction_pipeline_aachen_v1_1.py 
+	--dataset_path /local/aachen 
+	--colmap_path /local/colmap/build/src/exe
+	--method_name d2-net
+```
+Please see above for details.
+
 ### Citing
 
 If you use this code in your project, please cite the following paper:
