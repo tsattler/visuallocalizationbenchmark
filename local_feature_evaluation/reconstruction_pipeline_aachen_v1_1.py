@@ -55,7 +55,7 @@ def preprocess_reference_model(paths, args):
     print('Preprocessing the reference model...')
     
     # Recover intrinsics.
-    with open(os.path.join(paths.reference_model_path, 'database_intrinsics.txt')) as f:
+    with open(os.path.join(paths.reference_model_path, 'aachen_v_1_1/database_intrinsics_v1_1.txt')) as f:
         raw_intrinsics = f.readlines()
     
     camera_parameters = {}
